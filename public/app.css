@@ -65,7 +65,7 @@ label {
   gap: 0.75rem;
 }
 
-input[type='url'] {
+input[type='text'] {
   width: 100%;
   padding: 0.85rem 1rem;
   border: 1px solid var(--line);
@@ -75,7 +75,7 @@ input[type='url'] {
   font: inherit;
 }
 
-input[type='url']:focus {
+input[type='text']:focus {
   outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
   border-color: var(--accent);
 }
@@ -136,7 +136,7 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 0.85rem;
+  margin: 0.85rem 0;
 }
 
 .timer {

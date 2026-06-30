@@ -6,9 +6,9 @@ import { sendJson } from './lib/http-response.js';
 import { handleResolve } from './routes/resolve.js';
 import { handleStream } from './routes/stream.js';
 
-const rootDir = fileURLToPath(new URL('..', import.meta.url));
+const rootDir = fileURLToPath(new URL('../..', import.meta.url));
 const publicDir = join(rootDir, 'public');
-const libDir = join(rootDir, 'lib');
+const libDir = join(rootDir, 'src/lib');
 const port = Number(process.env.PORT) || 8787;
 
 const mimeTypes = {

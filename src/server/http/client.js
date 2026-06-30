@@ -116,9 +116,8 @@ function h2Request(urlStr, headers, redirects = 0) {
       const status = Number(responseHeaders[':status']);
       if ([301, 302, 307, 308].includes(status) && responseHeaders.location && redirects < 10) {
         req.close();
-        h2Request(new URL(responseHeaders.location, url).href, headers, redirects + 1)
-          .then(resolve)
-          .catch(reject);
+        const nextUrl = new URL(responseHeaders.location, url).href;
+        h2Request(nextUrl, headers, redirects + 1).then(resolve).catch(reject);
         return;
       }
       req.on('data', (chunk) => chunks.push(chunk));
@@ -154,9 +153,8 @@ function h1Request(urlStr, headers, redirects = 0) {
       (res) => {
         if ([301, 302, 307, 308].includes(res.statusCode) && res.headers.location && redirects < 10) {
           res.resume();
-          h1Request(new URL(res.headers.location, url).href, headers, redirects + 1)
-            .then(resolve)
-            .catch(reject);
+          const nextUrl = new URL(res.headers.location, url).href;
+          h1Request(nextUrl, headers, redirects + 1).then(resolve).catch(reject);
           return;
         }
         const chunks = [];

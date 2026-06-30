@@ -1,6 +1,21 @@
 import { fetchStream } from '../http/client.js';
 import { sendJson } from '../lib/http-response.js';
 
+function upstreamHeaders(headers) {
+  const next = {
+    'Content-Type': headers['content-type'] ?? 'video/mp4',
+    'Accept-Ranges': headers['accept-ranges'] ?? 'bytes',
+    'Cache-Control': 'no-store',
+  };
+  if (headers['content-range']) {
+    next['Content-Range'] = headers['content-range'];
+  }
+  if (headers['content-length']) {
+    next['Content-Length'] = headers['content-length'];
+  }
+  return next;
+}
+
 export async function handleStream(request, response, url) {
   const directLink = url.searchParams.get('url');
   const referer = url.searchParams.get('referer');
@@ -14,18 +29,7 @@ export async function handleStream(request, response, url) {
       headers.range = request.headers.range;
     }
     const upstream = await fetchStream(directLink, headers);
-    const responseHeaders = {
-      'Content-Type': upstream.headers['content-type'] ?? 'video/mp4',
-      'Accept-Ranges': upstream.headers['accept-ranges'] ?? 'bytes',
-      'Cache-Control': 'no-store',
-    };
-    if (upstream.headers['content-range']) {
-      responseHeaders['Content-Range'] = upstream.headers['content-range'];
-    }
-    if (upstream.headers['content-length']) {
-      responseHeaders['Content-Length'] = upstream.headers['content-length'];
-    }
-    response.writeHead(upstream.statusCode, responseHeaders);
+    response.writeHead(upstream.statusCode, upstreamHeaders(upstream.headers));
     upstream.stream.pipe(response);
   } catch (error) {
     sendJson(response, 502, { error: error.message || 'Proxy playback failed' });

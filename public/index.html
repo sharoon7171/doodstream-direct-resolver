@@ -10,17 +10,17 @@
   <div class="shell">
     <header>
       <h1>DoodStream Direct Link Resolver</h1>
-      <p>Turn a DoodStream mirror URL into a direct CDN MP4 link.</p>
+      <p>Turn a DoodStream video ID into a direct CDN MP4 link.</p>
     </header>
 
     <section class="panel">
       <form id="resolve-form">
-        <label for="url-input">Mirror URL</label>
+        <label for="video-id-input">Video ID</label>
         <div class="input-row">
           <input
-            id="url-input"
-            type="url"
-            placeholder="https://playmogo.com/e/5x50byl1sld3"
+            id="video-id-input"
+            type="text"
+            placeholder="5x50byl1sld3"
             autocomplete="off"
             spellcheck="false"
             required
@@ -29,18 +29,18 @@
         </div>
       </form>
       <div id="status" class="status"></div>
+      <div id="timers" class="timers" hidden>
+        <div class="timer">
+          <span class="timer-label">Resolve time</span>
+          <span id="resolve-time" class="timer-value">—</span>
+        </div>
+        <div class="timer">
+          <span class="timer-label">Playback start</span>
+          <span id="play-time" class="timer-value">—</span>
+        </div>
+      </div>
       <div id="result-section" hidden>
         <h2 class="result-title">Result</h2>
-        <div class="timers">
-          <div class="timer">
-            <span class="timer-label">Resolve time</span>
-            <span id="resolve-time" class="timer-value">—</span>
-          </div>
-          <div class="timer">
-            <span class="timer-label">Playback start</span>
-            <span id="play-time" class="timer-value">—</span>
-          </div>
-        </div>
         <div class="links">
           <div class="link-row">
             <span class="link-label">Direct link</span>

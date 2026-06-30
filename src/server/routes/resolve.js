@@ -1,12 +1,12 @@
-import { parseMirrorUrl } from '../../lib/parse-mirror-url.js';
+import { parseVideoId } from '../../lib/parse-video-id.js';
 import { resolveDirectLink, verifyDirectLink } from '../doodstream/resolver.js';
 import { readJsonBody, sendJson } from '../lib/http-response.js';
 
 export async function handleResolve(request, response) {
   try {
     const body = await readJsonBody(request);
-    const { mirrorUrl, videoId } = parseMirrorUrl(body.url ?? '');
-    const result = await resolveDirectLink(mirrorUrl, videoId);
+    const videoId = parseVideoId(body.videoId ?? '');
+    const result = await resolveDirectLink(videoId);
     const verification = await verifyDirectLink(result.directLink, result.referer);
     if (!verification.ok) {
       sendJson(response, 502, { error: `Direct link check failed (HTTP ${verification.status})` });
