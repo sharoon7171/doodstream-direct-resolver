@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DoodStream Direct Link Resolver</title>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <h1>DoodStream Direct Link Resolver</h1>
+      <p>Turn a DoodStream mirror URL into a direct CDN MP4 link.</p>
+    </header>
+
+    <section class="panel">
+      <form id="resolve-form">
+        <label for="url-input">Mirror URL</label>
+        <div class="input-row">
+          <input
+            id="url-input"
+            type="url"
+            placeholder="https://playmogo.com/e/5x50byl1sld3"
+            autocomplete="off"
+            spellcheck="false"
+            required
+          >
+          <button id="submit-btn" type="submit">Resolve</button>
+        </div>
+      </form>
+      <div id="status" class="status"></div>
+      <div id="result-section" hidden>
+        <h2 class="result-title">Result</h2>
+        <div class="timers">
+          <div class="timer">
+            <span class="timer-label">Resolve time</span>
+            <span id="resolve-time" class="timer-value">—</span>
+          </div>
+          <div class="timer">
+            <span class="timer-label">Playback start</span>
+            <span id="play-time" class="timer-value">—</span>
+          </div>
+        </div>
+        <div class="links">
+          <div class="link-row">
+            <span class="link-label">Direct link</span>
+            <div class="link-field">
+              <code id="direct-link" class="link-url"></code>
+              <button type="button" class="copy-btn" data-copy-target="direct-link">Copy</button>
+            </div>
+          </div>
+          <div class="link-row">
+            <span class="link-label">Proxy link</span>
+            <div class="link-field">
+              <code id="proxy-link" class="link-url"></code>
+              <button type="button" class="copy-btn" data-copy-target="proxy-link">Copy</button>
+            </div>
+          </div>
+        </div>
+        <p class="link-hint">Direct link is the real CDN URL. Proxy link is for browser test playback on this page.</p>
+        <div id="meta"></div>
+        <h3 class="preview-title">Test playback</h3>
+        <video id="video" controls playsinline preload="auto" autoplay></video>
+      </div>
+    </section>
+  </div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

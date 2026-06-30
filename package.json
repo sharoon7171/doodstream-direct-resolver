@@ -1,0 +1,7 @@
+{
+  "name": "doodstream-direct-resolver",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js"
+  }
+}
