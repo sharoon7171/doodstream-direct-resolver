@@ -49,7 +49,7 @@ createServer(async (request, response) => {
     return;
   }
 
-  if (request.method === 'GET' && url.pathname === '/api/stream') {
+  if ((request.method === 'GET' || request.method === 'HEAD') && url.pathname === '/api/stream') {
     await handleStream(request, response, url);
     return;
   }

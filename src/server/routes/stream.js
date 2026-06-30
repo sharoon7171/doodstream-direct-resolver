@@ -27,9 +27,16 @@ export async function handleStream(request, response, url) {
     const headers = { referer };
     if (request.headers.range) {
       headers.range = request.headers.range;
+    } else if (request.method === 'HEAD') {
+      headers.range = 'bytes=0-0';
     }
     const upstream = await fetchStream(directLink, headers);
     response.writeHead(upstream.statusCode, upstreamHeaders(upstream.headers));
+    if (request.method === 'HEAD') {
+      upstream.stream.resume();
+      response.end();
+      return;
+    }
     upstream.stream.pipe(response);
   } catch (error) {
     sendJson(response, 502, { error: error.message || 'Proxy playback failed' });

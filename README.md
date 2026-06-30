@@ -25,7 +25,7 @@ flowchart TB
   subgraph client [Browser / API consumer]
     UI[public/app.js]
     API[POST /api/resolve]
-    Proxy[GET /api/stream]
+    Proxy[GET/HEAD /api/stream]
   end
 
   subgraph server [src/server/]
@@ -86,7 +86,7 @@ flowchart TB
         │   └── http-response.js  readJsonBody, sendJson
         ├── routes/
         │   ├── resolve.js        POST /api/resolve orchestration
-        │   └── stream.js         GET /api/stream byte proxy
+        │   └── stream.js         GET/HEAD /api/stream byte proxy
         ├── doodstream/
         │   └── resolver.js       Bootstrap, embed decode, pass_md5, direct link build
         └── http/
@@ -99,9 +99,9 @@ flowchart TB
 | Module | Role |
 | --- | --- |
 | `parse-video-id.js` | Single parser shared by server route and browser client for consistent validation |
-| `src/server/index.js` | Routes `POST /api/resolve`, `GET /api/stream`, serves `public/` and `src/lib/` at `/lib/*` |
+| `src/server/index.js` | Routes `POST /api/resolve`, `GET/HEAD /api/stream`, serves `public/` and `src/lib/` at `/lib/*` |
 | `routes/resolve.js` | Parses `videoId`, calls resolver, verifies link, returns JSON |
-| `routes/stream.js` | Proxies CDN range requests with injected `Referer` |
+| `routes/stream.js` | Proxies CDN range requests with injected `Referer`; supports `HEAD` for external players |
 | `doodstream/resolver.js` | Implements the DoodStream embed → CDN URL protocol |
 | `http/client.js` | All upstream HTTPS; session pooling; H2 primary, H1 fallback |
 | `http/browser-headers.js` | Chrome 131 UA + `sec-*` headers for document and XHR-like modes |
@@ -182,9 +182,10 @@ The CDN enforces **`Referer: {mirror-origin}/`**. Browsers cannot set a cross-or
 
 ```
 GET /api/stream?url={encodeURIComponent(directLink)}&referer={encodeURIComponent(referer)}
+HEAD /api/stream?url=...&referer=...
 ```
 
-`routes/stream.js` forwards the browser's `Range` header, fetches upstream via `fetchStream`, and pipes bytes back with `Content-Range` / `Content-Length` preserved.
+`routes/stream.js` forwards the client's `Range` header on `GET`, fetches upstream via `fetchStream`, and pipes bytes back with `Content-Range` / `Content-Length` preserved. `HEAD` probes upstream with `Range: bytes=0-0` and returns video headers without a body.
 
 Direct CDN access (outside the browser) only requires attaching the `referer` field from the resolve response.
 
@@ -220,11 +221,11 @@ Errors:
 | `400` | Invalid video ID, missing embed data, pass_md5 failure, verification error |
 | `502` | CDN verification returned non-200/206 |
 
-### `GET /api/stream`
+### `GET /api/stream` and `HEAD /api/stream`
 
 Query params: `url` (direct CDN link), `referer` (from resolve response).
 
-Forwards `Range` from client. Returns upstream status and video headers. `502` on upstream failure.
+`GET` forwards `Range` from the client. `HEAD` returns upstream video headers (no body) for player probes. `502` on upstream failure.
 
 ## Frontend integration (public/app.js)
 
